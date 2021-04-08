@@ -1,3 +1,6 @@
 .idea
 sorek_env
 app/__pycache__
+.env
+.env.example
+app/models.py

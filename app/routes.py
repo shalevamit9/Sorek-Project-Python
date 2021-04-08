@@ -4,10 +4,13 @@ from app.classes import MatrixBullet
 import pandas as pd
 import numpy as np
 import json
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
 
 ROWS = 365
 COLS = 24
+HOLIDAYS_FORMAT_FILE = 'holidays_format.json'
+TAOZ_FORMAT_FILE = 'taoz_format.json'
+ELECTIONS_FORMAT_FILE = 'elections_format.json'
 
 
 def initialize_matrix(matrix):
@@ -27,20 +30,56 @@ def initialize_matrix(matrix):
         iterating_date += delta
 
 
-def initialize_taoz(matrix):
-    with open('taoz_format.json', 'r') as f:
-        taoz = json.load(f)
-    with open('holidays_format.json', 'r') as f:
+def parse_holidays():
+    with open(HOLIDAYS_FORMAT_FILE, 'r') as f:
         holidays = json.load(f)
+    for holiday in holidays:
+        holidays[holiday]['date'] = datetime.strptime(holidays[holiday]['date'], '%d/%m/%Y').date()
+    df = pd.DataFrame(holidays)
+    return holidays
+
+
+def parse_elections():
+    with open(ELECTIONS_FORMAT_FILE, 'r') as f:
+        elections = json.load(f)
+    for i in range(len(elections['dates'])):
+        if elections['dates'][i] is not None:
+            elections['dates'][i] = datetime.strptime(elections['dates'][i], '%d/%m/%Y').date()
+
+    return elections
+
+
+def get_holiday_day_representation(holidays, date_value):
+    for holiday in holidays:
+        if date_value == holidays[holiday]['date']:
+            return holidays[holiday]['taoz']
+
+
+def initialize_taoz(matrix):
+    with open(TAOZ_FORMAT_FILE, 'r') as f:
+        taoz = json.load(f)
+
+    holidays = parse_holidays()
+    elections = parse_elections()
+
     for day in range(len(matrix)):
-        # is_holiday =
+        current_date = matrix[day, 0].date
+        is_holiday = True if current_date in holidays.values() else False
+        is_election = True if current_date in elections['dates'] else False
+
         for hour in range(len(matrix[day])):
             cell = matrix[day, hour]
 
-            cell.define_taoz(taoz[cell.get_season()][cell.get_day_representation()][str(hour)])
+            day_representation = cell.get_day_representation()
+            if is_holiday:
+                day_representation = get_holiday_day_representation(holidays, current_date)
+            elif is_election:
+                day_representation = 'saturday_holiday'
 
-    # print(taoz['summer']['weekdays']['0'])
-    return taoz
+            cell.define_taoz(taoz[cell.get_season()][day_representation][str(hour)])
+
+    df = pd.DataFrame(matrix)
+    return 'dummy return for breakpoint'
 
 
 # def initialize_holidays(matrix):
