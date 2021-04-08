@@ -1,0 +1,77 @@
+{
+  "pesah_evening": {
+    "date": "27/3/2021",
+    "taoz": "friday_holiday_evening"
+  },
+  "pesah_day": {
+    "date": "28/3/2021",
+    "taoz": "saturday_holiday"
+  },
+  "pesah_sixth": {
+    "date": "2/4/2021",
+    "taoz": "friday_holiday_evening"
+  },
+  "pesah_seventh": {
+    "date": "3/4/2021",
+    "taoz": "saturday_holiday"
+  },
+  "memorial_day": {
+    "date": "14/4/2021",
+    "taoz": "friday_holiday_evening"
+  },
+  "independence_day": {
+    "date": "15/4/2021",
+    "taoz": "saturday_holiday"
+  },
+  "shavuot_evening": {
+    "date": "16/5/2021",
+    "taoz": "friday_holiday_evening"
+  },
+  "shavuot": {
+    "date": "17/5/2021",
+    "taoz": "saturday_holiday"
+  },
+  "rosh_hashana_evening": {
+    "date": "6/9/2021",
+    "taoz": "friday_holiday_evening"
+  },
+  "rosh_hashana_first": {
+    "date": "7/9/2021",
+    "taoz": "saturday_holiday"
+  },
+  "rosh_hashana_second": {
+    "date": "8/9/2021",
+    "taoz": "saturday_holiday"
+  },
+  "kipur_evening": {
+    "date": "15/9/2021",
+    "taoz": "friday_holiday_evening"
+  },
+  "kipur": {
+    "date": "16/9/2021",
+    "taoz": "saturday_holiday"
+  },
+  "sukot_evening": {
+    "date": "20/9/2021",
+    "taoz": "friday_holiday_evening"
+  },
+  "sukot": {
+    "date": "21/9/2021",
+    "taoz": "saturday_holiday"
+  },
+  "hoshana_raba": {
+    "date": "27/9/2021",
+    "taoz": "friday_holiday_evening"
+  },
+  "simhat_tora": {
+    "date": "28/9/2021",
+    "taoz": "saturday_holiday"
+  },
+  "elections": {
+    "date1": "23/3/2021",
+    "date2": null,
+    "date3": null,
+    "date4": null,
+    "taoz": "friday_holiday_evening"
+  }
+}
