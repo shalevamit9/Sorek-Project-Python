@@ -8,19 +8,11 @@ from datetime import date, timedelta, datetime
 ROWS = 365
 COLS = 24
 
-HOLIDAYS_FORMAT_FILE = 'holidays_format.json'
-TAOZ_FORMAT_FILE = 'taoz_format.json'
-ELECTIONS_FORMAT_FILE = 'elections_format.json'
-MIN_MAX_HP_FORMAT_FILE = 'min_max_hp_format.json'
-
-STARTER_PRODUCTION_AMOUNT_INDEX = 1
-
 
 def initialize_matrix(matrix):
     """
     initializing the matrix with dates and new empty MatrixBullet objects.
     receive an year property from the request body.
-    :param matrix: matrix created with numpy, the initial matrix to fill
     """
     # get the year parameter from the request
     year = request.get_json()['year']
@@ -35,22 +27,15 @@ def initialize_matrix(matrix):
 
 
 def parse_holidays():
-    # with open(HOLIDAYS_FORMAT_FILE, 'r') as f:
-    #     holidays = json.load(f)
-
     holidays = db.holidays.find_one({}, {'_id': 0})
 
     for holiday in holidays:
         holidays[holiday]['date'] = datetime.strptime(holidays[holiday]['date'], '%d/%m/%Y').date()
-    df = pd.DataFrame(holidays)
 
     return holidays
 
 
 def parse_elections():
-    # with open(ELECTIONS_FORMAT_FILE, 'r') as f:
-    #     elections = json.load(f)
-
     elections = db.elections.find_one({}, {'_id': 0})
 
     for i in range(len(elections['dates'])):
@@ -70,12 +55,7 @@ def initialize_taoz(matrix):
     """
     Defining the taoz type as enum for each bullet in the matrix,
     holidays included.
-    :param matrix: the matrix to initialize the taoz type in
-    :return:
     """
-    # with open(TAOZ_FORMAT_FILE, 'r') as f:
-    #     taoz = json.load(f)
-
     taoz = db.taoz.find_one({}, {'_id': 0})
 
     holidays = parse_holidays()
@@ -97,69 +77,90 @@ def initialize_taoz(matrix):
 
             cell.define_taoz(taoz[cell.get_season()][day_representation][hour])
 
-    # 2 last lines for debug breakpoint
-    df = pd.DataFrame(matrix)
-    return 'dummy return for breakpoint'
-
 
 def initialize_starter_production_amount(matrix):
     """
     Initializing the starter production amount for each matrix bullet.
-    It can be changed in the future
-    :param matrix:
-    :return:
+    It can be changed in the future.
+    Initializing the max production amount for 2 pumps as start amount.
     """
-
-    # with open(MIN_MAX_HP_FORMAT_FILE, 'r') as f:
-    #     min_max_hp = json.load(f)
+    starter_production_amount_index = 1
 
     min_max_hp = db.min_max_hp.find_one({}, {'_id': 0})
 
     production_amount_sum = 0
     for i in range(len(matrix)):
         for j in range(len(matrix[i])):
-            matrix[i, j].south_facility.production_amount = min_max_hp['south'][STARTER_PRODUCTION_AMOUNT_INDEX]['max']
-            matrix[i, j].north_facility.production_amount = min_max_hp['north'][STARTER_PRODUCTION_AMOUNT_INDEX]['max']
+            matrix[i, j].south_facility.production_amount = min_max_hp['south'][starter_production_amount_index]['max']
+            matrix[i, j].north_facility.production_amount = min_max_hp['north'][starter_production_amount_index]['max']
 
             production_amount_sum += \
                 matrix[i, j].south_facility.production_amount + matrix[i, j].north_facility.production_amount
 
             matrix[i, j].south_facility.number_of_pumps = \
-                min_max_hp['south'][STARTER_PRODUCTION_AMOUNT_INDEX]['hp_number']
+                min_max_hp['south'][starter_production_amount_index]['hp_number']
 
-            matrix[i, j].north_facility.number_of_pumps =\
-                min_max_hp['north'][STARTER_PRODUCTION_AMOUNT_INDEX]['hp_number']
-
-    # 2 last lines for debug breakpoint
-    df = pd.DataFrame(matrix)
-    return 'dummy return for breakpoint'
+            matrix[i, j].north_facility.number_of_pumps = \
+                min_max_hp['north'][starter_production_amount_index]['hp_number']
 
 
 def initialize_se(matrix):
     """
-    Initialize the se for each cell in the matrix
-    :param matrix:
-    :return:
+    Initialize the se (specific energy) for each cell in the matrix
     """
+    se = db.specific_energy.find_one({}, {'_id': 0})
+
+    for i in range(len(matrix)):
+        for j in range(len(matrix[i])):
+            # concat 'e_' to the number of pumps due to the key value in the object
+            num_of_pumps = 'e_' + str(matrix[i, j].north_facility.number_of_pumps)
+            month = matrix[i, j].date.month - 1
+
+            matrix[i, j].north_facility.se_per_hour = se['north'][month][num_of_pumps]
+            matrix[i, j].south_facility.se_per_hour = se['south'][month][num_of_pumps]
 
 
-def initialize_kwh(matrix):
+def initialize_kwh_price_and_limit(matrix):
     """
-    Initialize the kwh for each cell in the matrix
-    :param matrix:
-    :return:
+    Initialize the kwh price for each matrix bullet
     """
+    taoz_cost_limit = db.taoz_cost_limit.find_one({}, {'_id': 0})
+    for i in range(len(matrix)):
+        for j in range(len(matrix[i])):
+            month = matrix[i, j].date.month - 1
+            taoz = matrix[i, j].taoz.name
+
+            # initializing taoz_cost
+            matrix[i, j].north_facility.taoz_cost = taoz_cost_limit['taoz_cost'][month][taoz]
+            matrix[i, j].south_facility.taoz_cost = taoz_cost_limit['taoz_cost'][month][taoz]
+
+            # initializing secondary_taoz_cost
+            matrix[i, j].north_facility.secondary_taoz_cost = taoz_cost_limit['secondary_taoz_cost'][month][taoz]
+            matrix[i, j].south_facility.secondary_taoz_cost = taoz_cost_limit['secondary_taoz_cost'][month][taoz]
+
+            # initializing energy_limit
+            matrix[i, j].north_facility.kwh_energy_limit = taoz_cost_limit['energy_limit'][month][taoz]
+            matrix[i, j].south_facility.kwh_energy_limit = taoz_cost_limit['energy_limit'][month][taoz]
+
+
+def initialize_production_price(matrix):
+    """
+    Initializing the production price for each matrix bullet
+    """
+    for i in range(len(matrix)):
+        for j in range(len(matrix[i])):
+            matrix[i, j].north_facility.calculate_price()
+            matrix[i, j].south_facility.calculate_price()
 
 
 def initialize_price(matrix):
     """
     Initialize the price for each cell in the matrix
-    :param matrix:
-    :return:
     """
     initialize_starter_production_amount(matrix)
     initialize_se(matrix)
-    initialize_kwh(matrix)
+    initialize_kwh_price_and_limit(matrix)
+    initialize_production_price(matrix)
 
 
 def fill_matrix(matrix):
