@@ -2,7 +2,3 @@
 sorek_env
 app/__pycache__
 .env
-holidays_format.json
-min_max_hp_format.json
-taoz_format.json
-elections_format.json
