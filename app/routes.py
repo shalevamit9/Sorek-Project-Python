@@ -213,7 +213,7 @@ def update_bullet_production_amount(bullet: MatrixBullet, min_max_hp) -> None:
         bullet.north_facility.production_amount + bullet.south_facility.production_amount
 
 
-def update_bullet(bullet, min_max_hp):
+def update_bullet(bullet: MatrixBullet, min_max_hp):
     """
     update bullet num of pumps to use,
     production amount
