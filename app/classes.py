@@ -12,6 +12,7 @@ class Facility:
         self.number_of_pumps: int = number_of_pumps
         self.water_cubic_meter_price: float = water_cubic_meter_price
         self.kwh_energy_limit: int = kwh_energy_limit
+        self.shutdown: bool = False
         self.production_price: float = 0.0
 
     def calculate_price(self) -> None:

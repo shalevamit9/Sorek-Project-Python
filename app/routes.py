@@ -104,17 +104,21 @@ def initialize_starter_production_amount(matrix: NDArray[MatrixBullet]) -> None:
     production_amount_sum = 0
     for i in range(rows):
         for j in range(cols):
-            matrix[i, j].south_facility.production_amount = min_max_hp['south'][starter_production_amount_index]['max']
-            matrix[i, j].north_facility.production_amount = min_max_hp['north'][starter_production_amount_index]['max']
+            current_bullet: MatrixBullet = matrix[i, j]
 
-            production_amount_sum += \
-                matrix[i, j].south_facility.production_amount + matrix[i, j].north_facility.production_amount
+            if current_bullet.north_facility.shutdown is False:
+                current_bullet.north_facility.production_amount = \
+                    min_max_hp['north'][starter_production_amount_index]['max']
+                current_bullet.north_facility.number_of_pumps = \
+                    min_max_hp['north'][starter_production_amount_index]['hp_number']
+                production_amount_sum += current_bullet.north_facility.production_amount
 
-            matrix[i, j].south_facility.number_of_pumps = \
-                min_max_hp['south'][starter_production_amount_index]['hp_number']
-
-            matrix[i, j].north_facility.number_of_pumps = \
-                min_max_hp['north'][starter_production_amount_index]['hp_number']
+            if current_bullet.south_facility.shutdown is False:
+                current_bullet.south_facility.production_amount = \
+                    min_max_hp['south'][starter_production_amount_index]['max']
+                current_bullet.south_facility.number_of_pumps = \
+                    min_max_hp['south'][starter_production_amount_index]['hp_number']
+                production_amount_sum += current_bullet.south_facility.production_amount
 
     global total_sum_production_amount
     total_sum_production_amount = production_amount_sum
@@ -270,10 +274,10 @@ def decrease_until_limit(bullet: MatrixBullet, min_max_hp):
     if pumps_min_production >= target_amount:
         if bullet.north_facility.number_of_pumps >= 2:
             bullet.north_facility.number_of_pumps -= 1
-            bullet.north_facility.production_amount =\
+            bullet.north_facility.production_amount = \
                 min_max_hp['north'][bullet.north_facility.number_of_pumps]['max']
         else:
-            bullet.north_facility.production_amount =\
+            bullet.north_facility.production_amount = \
                 min_max_hp['north'][bullet.north_facility.number_of_pumps]['min']
 
         bullet.calculate_price()
