@@ -7,7 +7,6 @@ load_dotenv()
 
 app = Flask(__name__)
 
-app.config['ENV'] = 'development'
 app.config['MONGODB_DB'] = os.environ.get('MONGODB_DB')
 app.config['MONGODB_HOST'] = os.environ.get('MONGODB_HOST')
 app.config['MONGODB_PORT'] = os.environ.get('MONGODB_PORT')
