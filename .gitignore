@@ -2,3 +2,4 @@
 sorek_env
 app/__pycache__
 .env
+/__pycache__
