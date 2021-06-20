@@ -88,6 +88,17 @@ def initialize_taoz(matrix: NDArray[MatrixBullet]) -> None:
             cell.define_taoz(taoz[cell.get_season()][day_representation][hour])
 
 
+def initialize_shutdown_dates(matrix: NDArray[MatrixBullet]) -> None:
+    """Initializing the shutdown dates with specified hours in the same date"""
+    shutdown_dates = db.shutdown_dates.find_one({}, {'_id': 0})
+
+    for shutdown_day in shutdown_dates['days']:
+        day_index = datetime.strptime(shutdown_day['date'], '%d/%m/%Y').date().timetuple().tm_yday - 1
+        for hour in range(shutdown_day['from_hour'], shutdown_day['to_hour']):
+            matrix[day_index, hour].north_facility.shutdown = not shutdown_day['is_south_facility']
+            matrix[day_index, hour].south_facility.shutdown = shutdown_day['is_south_facility']
+
+
 def initialize_starter_production_amount(matrix: NDArray[MatrixBullet]) -> None:
     """
     Initializing the starter production amount for each matrix bullet.
@@ -136,11 +147,15 @@ def initialize_se(matrix: NDArray[MatrixBullet]) -> None:
     for i in range(rows):
         for j in range(cols):
             # concat 'e_' to the number of pumps due to the key value in the object
-            num_of_pumps = 'e_' + str(matrix[i, j].north_facility.number_of_pumps)
-            month = matrix[i, j].date.month - 1
+            bullet: MatrixBullet = matrix[i, j]
+            north_num_of_pumps = 'e_' + str(bullet.north_facility.number_of_pumps)
+            south_num_of_pumps = 'e_' + str(bullet.south_facility.number_of_pumps)
+            month = bullet.date.month - 1
 
-            matrix[i, j].north_facility.se_per_hour = se['north'][month][num_of_pumps]
-            matrix[i, j].south_facility.se_per_hour = se['south'][month][num_of_pumps]
+            if bullet.north_facility.shutdown is False:
+                bullet.north_facility.se_per_hour = se['north'][month][north_num_of_pumps]
+            if bullet.south_facility.shutdown is False:
+                bullet.south_facility.se_per_hour = se['south'][month][south_num_of_pumps]
 
 
 def initialize_kwh_price_and_limit(matrix: NDArray[MatrixBullet]) -> None:
@@ -182,9 +197,7 @@ def initialize_production_price(matrix: NDArray[MatrixBullet]) -> None:
 
 
 def initialize_price(matrix: NDArray[MatrixBullet]) -> None:
-    """
-    Initialize the price for each cell in the matrix
-    """
+    """Initialize the price for each cell in the matrix"""
     initialize_starter_production_amount(matrix)
     initialize_se(matrix)
     initialize_kwh_price_and_limit(matrix)
@@ -194,54 +207,55 @@ def initialize_price(matrix: NDArray[MatrixBullet]) -> None:
 def fill_matrix(matrix: NDArray[MatrixBullet]) -> None:
     initialize_matrix(matrix)
     initialize_taoz(matrix)
+    initialize_shutdown_dates(matrix)
     initialize_price(matrix)
 
 
-def update_bullet_pumps_num(bullet: MatrixBullet, min_max_hp) -> None:
-    """add one pump usage to the facility at the a specific hour"""
-    bullet.south_facility.number_of_pumps += 1
-    bullet.north_facility.number_of_pumps += 1
+# def update_bullet_pumps_num(bullet: MatrixBullet, min_max_hp) -> None:
+#     """add one pump usage to the facility at the a specific hour"""
+#     bullet.south_facility.number_of_pumps += 1
+#     bullet.north_facility.number_of_pumps += 1
 
 
-def update_bullet_production_amount(bullet: MatrixBullet, min_max_hp) -> None:
-    """update the production amount for a specific hour based on the amount of pumps to use"""
-    global total_sum_production_amount
-    total_sum_production_amount -= \
-        bullet.north_facility.production_amount + bullet.south_facility.production_amount
-
-    num_of_pumps = bullet.north_facility.number_of_pumps - 1
-    bullet.north_facility.production_amount = min_max_hp['north'][num_of_pumps]['max']
-    bullet.south_facility.production_amount = min_max_hp['south'][num_of_pumps]['max']
-
-    total_sum_production_amount += \
-        bullet.north_facility.production_amount + bullet.south_facility.production_amount
-
-
-def update_bullet(bullet: MatrixBullet, min_max_hp):
-    """
-    update bullet num of pumps to use,
-    production amount
-    and calculates the new price for a specific hour
-    """
-    update_bullet_pumps_num(bullet, min_max_hp)
-    update_bullet_production_amount(bullet, min_max_hp)
-    bullet.calculate_price()
+# def update_bullet_production_amount(bullet: MatrixBullet, min_max_hp) -> None:
+#     """update the production amount for a specific hour based on the amount of pumps to use"""
+#     global total_sum_production_amount
+#     total_sum_production_amount -= \
+#         bullet.north_facility.production_amount + bullet.south_facility.production_amount
+#
+#     num_of_pumps = bullet.north_facility.number_of_pumps - 1
+#     bullet.north_facility.production_amount = min_max_hp['north'][num_of_pumps]['max']
+#     bullet.south_facility.production_amount = min_max_hp['south'][num_of_pumps]['max']
+#
+#     total_sum_production_amount += \
+#         bullet.north_facility.production_amount + bullet.south_facility.production_amount
 
 
-def find_min_production_amount_bullet(matrix: NDArray[MatrixBullet]) -> MatrixBullet:
-    """Find and return the MatrixBullet in the matrix with the minimal price"""
-    tmp_min_price = matrix[0, 0].price
-    tmp_min_bullet = matrix[0, 0]
-    rows = matrix.shape[0]
-    cols = matrix.shape[1]
+# def update_bullet(bullet: MatrixBullet, min_max_hp):
+#     """
+#     update bullet num of pumps to use,
+#     production amount
+#     and calculates the new price for a specific hour
+#     """
+#     update_bullet_pumps_num(bullet, min_max_hp)
+#     update_bullet_production_amount(bullet, min_max_hp)
+#     bullet.calculate_price()
 
-    for i in range(rows):
-        for j in range(cols):
-            if tmp_min_price > matrix[i, j].price:
-                tmp_min_price = matrix[i, j].price
-                tmp_min_bullet = matrix[i, j]
 
-    return tmp_min_bullet
+# def find_min_production_amount_bullet(matrix: NDArray[MatrixBullet]) -> MatrixBullet:
+#     """Find and return the MatrixBullet in the matrix with the minimal price"""
+#     tmp_min_price = matrix[0, 0].price
+#     tmp_min_bullet = matrix[0, 0]
+#     rows = matrix.shape[0]
+#     cols = matrix.shape[1]
+#
+#     for i in range(rows):
+#         for j in range(cols):
+#             if tmp_min_price > matrix[i, j].price:
+#                 tmp_min_price = matrix[i, j].price
+#                 tmp_min_bullet = matrix[i, j]
+#
+#     return tmp_min_bullet
 
 
 def update_production_price_till_target(matrix: NDArray[MatrixBullet]) -> None:
@@ -253,50 +267,63 @@ def update_production_price_till_target(matrix: NDArray[MatrixBullet]) -> None:
     global total_sum_production_amount
     target_amount = request.get_json()['target']
 
+    production_limits = db.production_limits.find_one({}, {'_id': 0})
     min_max_hp = db.min_max_hp.find_one({}, {'_id': 0})
 
-    while total_sum_production_amount <= target_amount:
-        min_price_bullet = find_min_production_amount_bullet(matrix)
-        update_bullet(min_price_bullet, min_max_hp)
-
-    while total_sum_production_amount > target_amount:
-        max_price_bullet = find_max_production_amount_bullet(matrix)
-
-
-def decrease_until_limit(bullet: MatrixBullet, min_max_hp):
-    min_prod_amount_north = min_max_hp['north'][bullet.north_facility.number_of_pumps]['min']
-    min_prod_amount_south = min_max_hp['south'][bullet.south_facility.number_of_pumps]['min']
-    target_amount = request.get_json()['target']
-    global total_sum_production_amount
-
-    pumps_min_production = \
-        total_sum_production_amount - bullet.north_facility.production_amount + min_prod_amount_north
-    if pumps_min_production >= target_amount:
-        if bullet.north_facility.number_of_pumps >= 2:
-            bullet.north_facility.number_of_pumps -= 1
-            bullet.north_facility.production_amount = \
-                min_max_hp['north'][bullet.north_facility.number_of_pumps]['max']
-        else:
-            bullet.north_facility.production_amount = \
-                min_max_hp['north'][bullet.north_facility.number_of_pumps]['min']
-
-        bullet.calculate_price()
-
-
-def find_max_production_amount_bullet(matrix: NDArray[MatrixBullet]) -> MatrixBullet:
-    """Find and return the MatrixBullet in the matrix with the minimal price"""
-    tmp_max_price = matrix[0, 0].price
-    tmp_max_bullet = matrix[0, 0]
     rows = matrix.shape[0]
     cols = matrix.shape[1]
 
+    daily_limit = sum(matrix[0])
+
     for i in range(rows):
         for j in range(cols):
-            if tmp_max_price < matrix[i, j].price:
-                tmp_max_price = matrix[i, j].price
-                tmp_max_bullet = matrix[i, j]
+            bullet: MatrixBullet = matrix[i, j]
+            bio_month = bullet.get_bio_month()
+            limits = production_limits[bio_month]
 
-    return tmp_max_bullet
+            hourly_production_amount = bullet.north_facility.production_amount + bullet.south_facility.production_amount
+            if hourly_production_amount > limits['hourly']['max']:
+                break
+
+            daily_production_amount = sum(matrix[i])
+            while daily_production_amount < limits['daily']['min']:
+                pass
+
+
+# def decrease_until_limit(bullet: MatrixBullet, min_max_hp):
+#     min_prod_amount_north = min_max_hp['north'][bullet.north_facility.number_of_pumps]['min']
+#     min_prod_amount_south = min_max_hp['south'][bullet.south_facility.number_of_pumps]['min']
+#     target_amount = request.get_json()['target']
+#     global total_sum_production_amount
+#
+#     pumps_min_production = \
+#         total_sum_production_amount - bullet.north_facility.production_amount + min_prod_amount_north
+#     if pumps_min_production >= target_amount:
+#         if bullet.north_facility.number_of_pumps >= 2:
+#             bullet.north_facility.number_of_pumps -= 1
+#             bullet.north_facility.production_amount = \
+#                 min_max_hp['north'][bullet.north_facility.number_of_pumps]['max']
+#         else:
+#             bullet.north_facility.production_amount = \
+#                 min_max_hp['north'][bullet.north_facility.number_of_pumps]['min']
+#
+#         bullet.calculate_price()
+
+
+# def find_max_production_amount_bullet(matrix: NDArray[MatrixBullet]) -> MatrixBullet:
+#     """Find and return the MatrixBullet in the matrix with the minimal price"""
+#     tmp_max_price = matrix[0, 0].price
+#     tmp_max_bullet = matrix[0, 0]
+#     rows = matrix.shape[0]
+#     cols = matrix.shape[1]
+#
+#     for i in range(rows):
+#         for j in range(cols):
+#             if tmp_max_price < matrix[i, j].price:
+#                 tmp_max_price = matrix[i, j].price
+#                 tmp_max_bullet = matrix[i, j]
+#
+#     return tmp_max_bullet
 
 
 # dfs = pd.read_excel('taoz.xls', sheet_name=None)

@@ -17,7 +17,8 @@ class Facility:
 
     def calculate_price(self) -> None:
         """Calculates the production_price for the using facility."""
-        self.production_price = self.se_per_hour * self.production_amount * self.taoz_cost
+        if self.shutdown is False:
+            self.production_price = self.se_per_hour * self.production_amount * self.taoz_cost
 
 
 class MatrixBullet:
@@ -75,6 +76,33 @@ class MatrixBullet:
             return 'friday_holiday_evening'
         else:
             return 'saturday_holiday'
+
+    def get_bio_month(self) -> str:
+        """
+        return a string representation to the bullet bio_month, example:
+        'jan_feb', 'mar_apr', ...
+        :return:
+        """
+        if self.date.month == 1 or self.date.month == 2:
+            return 'jan_feb'
+        if self.date.month == 3 or self.date.month == 4:
+            return 'mar_apr'
+        if self.date.month == 5 or self.date.month == 6:
+            return 'may_jun'
+        if self.date.month == 7 or self.date.month == 8:
+            return 'jul_aug'
+        if self.date.month == 9 or self.date.month == 10:
+            return 'sep_oct'
+        if self.date.month == 11 or self.date.month == 12:
+            return 'nov_dec'
+
+    def __radd__(self, other):
+        production_amount = self.south_facility.production_amount + self.north_facility.production_amount
+        return production_amount + other
+
+    def __add__(self, other):
+        production_amount = self.south_facility.production_amount + self.north_facility.production_amount
+        return production_amount + other
 
 
 class Taoz(Enum):
