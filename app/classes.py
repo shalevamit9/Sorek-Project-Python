@@ -96,6 +96,37 @@ class MatrixBullet:
         if self.date.month == 11 or self.date.month == 12:
             return 'nov_dec'
 
+    def get_month(self) -> str:
+        """
+        return a string representation to the bullet month, example:
+        'jan', 'feb', 'mar', 'apr', ...
+        :return:
+        """
+        if self.date.month == 1:
+            return 'jan'
+        if self.date.month == 2:
+            return 'feb'
+        if self.date.month == 3:
+            return 'mar'
+        if self.date.month == 4:
+            return 'apr'
+        if self.date.month == 5:
+            return 'may'
+        if self.date.month == 6:
+            return 'jun'
+        if self.date.month == 7:
+            return 'jul'
+        if self.date.month == 8:
+            return 'aug'
+        if self.date.month == 9:
+            return 'sep'
+        if self.date.month == 10:
+            return 'oct'
+        if self.date.month == 11:
+            return 'nov'
+        if self.date.month == 12:
+            return 'dev'
+
     def __radd__(self, other):
         production_amount = self.south_facility.production_amount + self.north_facility.production_amount
         return production_amount + other
