@@ -1,11 +1,12 @@
 from datetime import date, timedelta, datetime
+from typing import Tuple
 
 import numpy as np
 from nptyping import NDArray
 from flask import jsonify, request
 
 from app import app, db
-from app.classes import MatrixBullet
+from app.classes import Facility, MatrixBullet
 
 ROWS = 365
 COLS = 24
