@@ -258,6 +258,61 @@ def fill_matrix(matrix: NDArray[MatrixBullet]) -> None:
 #
 #     return tmp_min_bullet
 
+def update_hour(hour: MatrixBullet, is_north: bool, hourly_limit: int) -> None:
+    """
+    updates a specific hour number of pumps, se, production amount
+    """
+    min_max_hp = db.min_max_hp.find_one({}, {'_id': 0})
+    se = db.specific_energy.find_one({}, {'_id': 0})
+
+    month = hour.date.month - 1
+
+    is_north_updateable = is_north and hour.north_facility.number_of_pumps < 5
+    if is_north_updateable:
+        facility: Facility = hour.north_facility
+        facility.number_of_pumps += 1
+        facility.se_per_hour = se['north'][month]['e_' + str(facility.number_of_pumps)]
+        if min_max_hp['north'][facility.number_of_pumps]['max'] <= hourly_limit:
+            facility.production_amount = min_max_hp['north'][facility.number_of_pumps]['max']
+        else:
+            facility.production_amount = hourly_limit
+    elif not is_north and hour.south_facility.number_of_pumps < 5:
+        facility: Facility = hour.south_facility
+        facility.number_of_pumps += 1
+        facility.se_per_hour = se['north'][month]['e_' + str(facility.number_of_pumps)]
+        # TODO: index out of range error
+        if min_max_hp['south'][facility.number_of_pumps]['max'] <= hourly_limit:
+            facility.production_amount = min_max_hp['south'][facility.number_of_pumps]['max']
+        else:
+            facility.production_amount = hourly_limit
+
+    hour.calculate_price()
+
+def get_cheapest_hour_of_day(day: NDArray[MatrixBullet], hourly_limit: int) -> Tuple[MatrixBullet, bool]:
+    """
+    finds the MIN hour of a specific day and return it with a flag
+    that checks if the north or south facility is in the limit
+    """
+    cheapest_hour: MatrixBullet = day[0]
+    is_north = False
+
+    for hour in day:
+        # for intellisense
+        hour: MatrixBullet = hour
+
+        is_cheaper_hour = hour.price < cheapest_hour.price
+
+        is_in_north_limit = hour.north_facility.production_amount < hourly_limit
+        if is_cheaper_hour and is_in_north_limit:
+            cheapest_hour = hour
+            is_north = True
+
+        is_in_south_limit = hour.south_facility.production_amount < hourly_limit
+        if is_cheaper_hour and is_in_south_limit:
+            cheapest_hour = hour
+            is_north = False
+
+    return cheapest_hour, is_north
 
 def update_production_price_till_target(matrix: NDArray[MatrixBullet]) -> None:
     """
@@ -269,12 +324,14 @@ def update_production_price_till_target(matrix: NDArray[MatrixBullet]) -> None:
     target_amount = request.get_json()['target']
 
     production_limits = db.production_limits.find_one({}, {'_id': 0})
-    min_max_hp = db.min_max_hp.find_one({}, {'_id': 0})
+    se_ranges = db.specific_energy_ranges.find_one({}, {'_id': 0})
+    # min_max_hp = db.min_max_hp.find_one({}, {'_id': 0})
 
     rows = matrix.shape[0]
     cols = matrix.shape[1]
 
-    daily_limit = sum(matrix[0])
+    day_prod_amount = sum(matrix[0])
+    print(day_prod_amount)
 
     for i in range(rows):
         for j in range(cols):
@@ -288,7 +345,9 @@ def update_production_price_till_target(matrix: NDArray[MatrixBullet]) -> None:
 
             daily_production_amount = sum(matrix[i])
             while daily_production_amount < limits['daily']['min']:
-                pass
+                # go to the cheapest hour of the day, increase the production amount as much as possible
+                cheapest_hour, is_north = get_cheapest_hour_of_day(matrix[i], limits['hourly']['max'])
+                update_hour(cheapest_hour, is_north, limits['hourly']['max'])
 
 
 # def decrease_until_limit(bullet: MatrixBullet, min_max_hp):
