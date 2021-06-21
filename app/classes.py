@@ -3,7 +3,7 @@ from datetime import date
 
 
 class Facility:
-    def __init__(self, production_amount=None, taoz_cost=None, secondary_taoz_cost=None, se_per_hour=None,
+    def __init__(self, production_amount=0, taoz_cost=None, secondary_taoz_cost=None, se_per_hour=None,
                  number_of_pumps=None, water_cubic_meter_price=None, kwh_energy_limit=None):
         self.production_amount: int = production_amount
         self.taoz_cost: float = taoz_cost
