@@ -330,6 +330,7 @@ def update_production_price_till_target(matrix: NDArray[MatrixBullet]) -> None:
     rows = matrix.shape[0]
     cols = matrix.shape[1]
 
+    # for testing
     day_prod_amount = sum(matrix[0])
     print(day_prod_amount)
 
@@ -348,6 +349,7 @@ def update_production_price_till_target(matrix: NDArray[MatrixBullet]) -> None:
                 # go to the cheapest hour of the day, increase the production amount as much as possible
                 cheapest_hour, is_north = get_cheapest_hour_of_day(matrix[i], limits['hourly']['max'])
                 update_hour(cheapest_hour, is_north, limits['hourly']['max'])
+                daily_production_amount = sum(matrix[i])
 
 
 # def decrease_until_limit(bullet: MatrixBullet, min_max_hp):
