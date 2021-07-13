@@ -69,10 +69,10 @@ class MatrixBullet:
         Return the day representation of the bullet,
         'weekdays', 'friday_holiday_evening' or 'saturday_holiday'.
         """
-        day = self.date.day
-        if day == 6 or 0 <= day <= 3:
+        day = self.date.isoweekday()
+        if day == 7 or 1 <= day <= 4:
             return 'weekdays'
-        elif day == 4:
+        elif day == 5:
             return 'friday_holiday_evening'
         else:
             return 'saturday_holiday'
