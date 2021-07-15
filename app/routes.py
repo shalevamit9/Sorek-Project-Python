@@ -368,4 +368,4 @@ def start_algorithm():
     fill_matrix(matrix)
     update_production_price_till_target(matrix)
     write_plan_to_xl(matrix)
-    return jsonify({'attr': 123})
+    return jsonify({'status': 'success'})
