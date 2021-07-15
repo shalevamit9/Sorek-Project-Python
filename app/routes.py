@@ -359,43 +359,6 @@ def update_production_price_till_target(matrix: NDArray[MatrixBullet]) -> None:
                 update_hour(cheapest_hour, is_north, limits['hourly']['max'])
                 daily_production_amount = sum(matrix[i])
 
-
-# def decrease_until_limit(bullet: MatrixBullet, min_max_hp):
-#     min_prod_amount_north = min_max_hp['north'][bullet.north_facility.number_of_pumps]['min']
-#     min_prod_amount_south = min_max_hp['south'][bullet.south_facility.number_of_pumps]['min']
-#     target_amount = request.get_json()['target']
-#     global total_sum_production_amount
-#
-#     pumps_min_production = \
-#         total_sum_production_amount - bullet.north_facility.production_amount + min_prod_amount_north
-#     if pumps_min_production >= target_amount:
-#         if bullet.north_facility.number_of_pumps >= 2:
-#             bullet.north_facility.number_of_pumps -= 1
-#             bullet.north_facility.production_amount = \
-#                 min_max_hp['north'][bullet.north_facility.number_of_pumps]['max']
-#         else:
-#             bullet.north_facility.production_amount = \
-#                 min_max_hp['north'][bullet.north_facility.number_of_pumps]['min']
-#
-#         bullet.calculate_price()
-
-
-# def find_max_production_amount_bullet(matrix: NDArray[MatrixBullet]) -> MatrixBullet:
-#     """Find and return the MatrixBullet in the matrix with the minimal price"""
-#     tmp_max_price = matrix[0, 0].price
-#     tmp_max_bullet = matrix[0, 0]
-#     rows = matrix.shape[0]
-#     cols = matrix.shape[1]
-#
-#     for i in range(rows):
-#         for j in range(cols):
-#             if tmp_max_price < matrix[i, j].price:
-#                 tmp_max_price = matrix[i, j].price
-#                 tmp_max_bullet = matrix[i, j]
-#
-#     return tmp_max_bullet
-
-
 # dfs = pd.read_excel('taoz.xls', sheet_name=None)
 # df = pd.read_excel('taoz.xls')
 
