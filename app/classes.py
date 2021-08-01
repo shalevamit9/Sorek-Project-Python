@@ -29,6 +29,9 @@ class MatrixBullet:
         self.date: date = init_date
         self.price: float = price
 
+    def get_production_amount(self) -> int:
+        return self.north_facility.production_amount + self.south_facility.production_amount
+
     def calculate_price(self) -> None:
         """
         calculates the price for each facility and sum will be initialized in MatrixBullet,
