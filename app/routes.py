@@ -1,5 +1,5 @@
 from datetime import date, timedelta, datetime
-from typing import Tuple
+from typing import List, Tuple
 
 import numpy as np
 from nptyping import NDArray
@@ -323,7 +323,41 @@ def get_month_day_indices(matrix: NDArray[MatrixBullet], months: list[int]):
             return start, end
 
 
-def get_cheapest_hour_of_bio_month(matrix: NDArray, start: int, end: int, production_limits):
+def get_expensive_hour_of_bio_month_optimized(matrix: NDArray, start: int, end: int, production_limits, visited: List[MatrixBullet]) -> tuple[MatrixBullet, bool]:
+    expensive_hour: MatrixBullet = matrix[start, 0]
+    is_north = False
+
+    cols = matrix.shape[1]
+
+    for i in range(start, end + 1):
+        for j in range(cols):
+            # for intellisense
+            hour: MatrixBullet = matrix[i, j]
+
+            is_more_expensive_hour = hour.price > expensive_hour.price
+            
+            hourly_limit = production_limits[hour.get_bio_month()]['hourly']['max']
+
+            is_in_north_hourly_limit = hour.north_facility.production_amount < hourly_limit
+            is_in_south_hourly_limit = hour.south_facility.production_amount < hourly_limit
+            if is_more_expensive_hour \
+                and is_in_north_hourly_limit \
+                and not hour.north_facility.shutdown \
+                and hour.south_facility.number_of_pumps > hour.north_facility.number_of_pumps\
+                and hour.south_facility not in visited:
+                expensive_hour = hour
+                is_north = True
+            elif is_more_expensive_hour \
+                and is_in_south_hourly_limit \
+                and not hour.south_facility.shutdown \
+                and hour.south_facility not in visited:
+                expensive_hour = hour
+                is_north = False
+
+    return expensive_hour, is_north
+
+
+def get_cheapest_hour_of_bio_month(matrix: NDArray, start: int, end: int, production_limits) -> tuple[MatrixBullet, bool]:
     cheapest_hour: MatrixBullet = matrix[start, 0]
     is_north = False
 
@@ -352,6 +386,17 @@ def get_cheapest_hour_of_bio_month(matrix: NDArray, start: int, end: int, produc
 
     return cheapest_hour, is_north
  
+
+def is_bio_month_updateable(matrix: NDArray[MatrixBullet], months: list[int]\
+    , hour: MatrixBullet, is_north: bool, hourly_production_limit: int, bio_month_production_limit: int) -> bool:
+    start_day, end_day = get_month_day_indices(matrix, months)
+    bio_month_production_amount = get_bio_month_production_amount(matrix, start_day, end_day)
+
+    amount_to_add = hourly_production_limit - (hour.north_facility.production_amount if is_north else hour.south_facility.production_amount)
+    is_over_bio_month_limit = amount_to_add + bio_month_production_amount >= bio_month_production_limit
+
+    return not is_over_bio_month_limit
+
 
 def update_bio_month_production(matrix: NDArray[MatrixBullet], production_limits) -> None:
     jan_feb_start_day, jan_feb_end_day = get_month_day_indices(matrix, [1, 2])
@@ -414,18 +459,27 @@ def get_cheapest_hour(matrix: NDArray[MatrixBullet]) -> MatrixBullet:
 
 
 def calculate_production_amount_to_add(bullet: MatrixBullet) -> int:
-    """return the production amount for an hour, return -1 if cannot add production to the hour"""
+    """return the production amount for an hour, return 0 if cannot add production to the hour"""
     if not bullet.north_facility.shutdown and bullet.north_facility.number_of_pumps < 5:
         return min_max_hp['north'][bullet.north_facility.number_of_pumps]['max'] - bullet.north_facility.production_amount
     if not bullet.south_facility.shutdown and bullet.south_facility.number_of_pumps < 5:
         return min_max_hp['south'][bullet.south_facility.number_of_pumps]['max'] - bullet.south_facility.production_amount
 
-    return -1
+    return 0
 
 
 def update_cheapest_hours(matrix: NDArray[MatrixBullet], production_limits) -> None:
     target_amount = request.get_json()['target']
     current_production_amount = sum(sum(matrix))
+
+    bio_months = {
+        'jan_feb': [1, 2],
+        'mar_apr': [3, 4],
+        'may_jun': [5, 6],
+        'jul_aug': [7, 8],
+        'sep_oct': [9, 10],
+        'nov_dec': [11, 12],
+    }
 
     while current_production_amount < target_amount:
         bullet = get_cheapest_hour(matrix)
@@ -440,9 +494,13 @@ def update_cheapest_hours(matrix: NDArray[MatrixBullet], production_limits) -> N
             elif not bullet.south_facility.shutdown and bullet.south_facility.number_of_pumps < 5:
                 bullet.south_facility.production_amount += production_amount_to_add
         else:
-            if not bullet.north_facility.shutdown and bullet.north_facility.number_of_pumps < 5:
+            if not bullet.north_facility.shutdown and bullet.north_facility.number_of_pumps < 5\
+                and is_bio_month_updateable(matrix, bio_months[bullet.get_bio_month()], bullet, True\
+                    , production_limits[bullet.get_bio_month()]['hourly']['max'], production_limits[bullet.get_bio_month()]['biomonthly']['max']):
                 update_hour(bullet, True, production_limits[bullet.get_bio_month()]['hourly']['max'])
-            elif not bullet.south_facility.shutdown and bullet.south_facility.number_of_pumps < 5:
+            elif not bullet.south_facility.shutdown and bullet.south_facility.number_of_pumps < 5\
+                and is_bio_month_updateable(matrix, bio_months[bullet.get_bio_month()], bullet, False\
+                    , production_limits[bullet.get_bio_month()]['hourly']['max'], production_limits[bullet.get_bio_month()]['biomonthly']['max']):
                 update_hour(bullet, False, production_limits[bullet.get_bio_month()]['hourly']['max'])
 
         current_production_amount += production_amount_to_add
@@ -485,10 +543,102 @@ def update_production_price_till_target(matrix: NDArray[MatrixBullet]) -> None:
     update_yearly_production(matrix, production_limits)
 
 
+def get_cheapest_hour_of_bio_month_optimization(matrix: NDArray, start: int, end: int, production_limits, visited: List[MatrixBullet]) -> tuple[MatrixBullet, bool]:
+    cheapest_hour: MatrixBullet = matrix[start, 0]
+    is_north = False
+
+    cols = matrix.shape[1]
+
+    for i in range(start, end + 1):
+        for j in range(cols):
+            # for intellisense
+            hour: MatrixBullet = matrix[i, j]
+
+            is_cheaper_hour = hour.price < cheapest_hour.price
+            
+            hourly_limit = production_limits[hour.get_bio_month()]['hourly']['max']
+
+            is_in_north_hourly_limit = hour.north_facility.production_amount < hourly_limit
+            is_in_south_hourly_limit = hour.south_facility.production_amount < hourly_limit
+            if is_cheaper_hour \
+                and is_in_north_hourly_limit \
+                and not hour.north_facility.shutdown \
+                and hour.south_facility.number_of_pumps > hour.north_facility.number_of_pumps \
+                and hour.north_facility not in visited:
+                cheapest_hour = hour
+                is_north = True
+            elif is_cheaper_hour \
+                and is_in_south_hourly_limit \
+                and not hour.south_facility.shutdown \
+                and hour.south_facility not in visited:
+                cheapest_hour = hour
+                is_north = False
+
+    return cheapest_hour, is_north
+
+
+def optimize_production_percentage(matrix: NDArray[MatrixBullet]):
+    production_limits = db.production_limits.find_one({}, {'_id': 0})
+    bio_months = {
+        'jan_feb': [1, 2],
+        'mar_apr': [3, 4],
+        'may_jun': [5, 6],
+        'jul_aug': [7, 8],
+        'sep_oct': [9, 10],
+        'nov_dec': [11, 12]
+    }
+
+    for bio_month in bio_months:
+        # calculate how much is 97% of min production amount bio monthly
+        min_production_bio_monthly = production_limits[bio_month]['biomonthly']['min'] * 0.97
+        # calculate how much is 103% of max production amount bio monthly
+        max_production_bio_monthly = production_limits[bio_month]['biomonthly']['max'] * 1.03
+
+        visited = []
+
+        bio_month_start_index, bio_month_end_index = get_month_day_indices(matrix, bio_months[bio_month])
+        bio_month_production_amount = get_bio_month_production_amount(matrix, bio_month_start_index, bio_month_end_index)
+        visited_hours_limit = (bio_month_end_index - bio_month_start_index + 1) * 2
+        while min_production_bio_monthly < bio_month_production_amount < max_production_bio_monthly and len(visited) <= visited_hours_limit:
+            # get specific bio month production amount
+            bio_month_production_amount = get_bio_month_production_amount(matrix, bio_month_start_index, bio_month_end_index)
+
+            # find the cheapest hour and change its value to 105 %
+            bio_month_cheapest_hour, is_north = get_cheapest_hour_of_bio_month_optimization(matrix, bio_month_start_index, bio_month_end_index, production_limits, visited)
+            if is_north:
+                # if bio_month_cheapest_hour.north_facility in visited:
+                #     break
+                visited.append(bio_month_cheapest_hour.north_facility)
+                bio_month_cheapest_hour.north_facility.production_amount *= 1.05
+                bio_month_cheapest_hour.north_facility.calculate_price()
+            else:
+                # if bio_month_cheapest_hour.south_facility in visited:
+                #     break
+                visited.append(bio_month_cheapest_hour.south_facility)
+                bio_month_cheapest_hour.south_facility.production_amount *= 1.05
+                bio_month_cheapest_hour.south_facility.calculate_price()
+            
+            # find the most expensive hour and change its value to 92 %
+            bio_month_expensive_hour, is_north = get_expensive_hour_of_bio_month_optimized(matrix, bio_month_start_index, bio_month_end_index, production_limits, visited)
+            if is_north:
+                # if bio_month_expensive_hour.north_facility in visited:
+                #     break
+                visited.append(bio_month_expensive_hour.north_facility)
+                bio_month_expensive_hour.north_facility.production_amount *= 0.92
+                bio_month_expensive_hour.north_facility.calculate_price()
+            else:
+                # if bio_month_expensive_hour.south_facility in visited:
+                #     break
+                visited.append(bio_month_expensive_hour.south_facility)
+                bio_month_expensive_hour.south_facility.production_amount *= 0.92
+                bio_month_expensive_hour.south_facility.calculate_price()
+
+
 @app.route('/start', methods=['POST'])
 def start_algorithm():
     matrix = np.empty([ROWS, COLS], dtype=MatrixBullet)
     fill_matrix(matrix)
     update_production_price_till_target(matrix)
+    optimize_production_percentage(matrix)
     write_plan_to_xl(matrix)
     return jsonify({'status': 'success'})

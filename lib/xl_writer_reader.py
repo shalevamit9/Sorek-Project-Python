@@ -3,6 +3,8 @@ from nptyping import NDArray
 from openpyxl.worksheet.worksheet import Worksheet
 from app.classes import MatrixBullet
 from openpyxl.styles import PatternFill
+from app import db
+from datetime import datetime
 
 def write_plan_to_xl(matrix: NDArray[MatrixBullet]):
   wb = Workbook()
@@ -10,10 +12,11 @@ def write_plan_to_xl(matrix: NDArray[MatrixBullet]):
   create_sheets(wb)
   write_sheets(matrix, wb)
 
-  wb.save('Sorek-Plan.xlsx')
+  wb.save('Sorek-Plan-Optimized.xlsx')
 
 
 def write_sheets(matrix: NDArray[MatrixBullet], wb: Workbook):
+  write_holidays_sheet(matrix, wb)
   write_taoz_sheet(matrix, wb)
   write_price_sheet(matrix, wb)
   write_total_production_amount_sheet(matrix, wb)
@@ -26,6 +29,24 @@ def write_sheets(matrix: NDArray[MatrixBullet], wb: Workbook):
   write_kwh_energy_limit_sheet(matrix, wb)
   write_shut_down_sheet(matrix, wb)
   write_production_price_sheet(matrix, wb)
+
+
+def write_holidays_sheet(matrix: NDArray[MatrixBullet], wb: Workbook):
+  ws = wb['holidays']
+
+  ws.cell(row=1, column=1).value = 'Holidays'
+  ws.cell(row=1, column=2).value = 'Date'
+  ws.cell(row=1, column=3).value = 'Day'
+
+  holidays = db.holidays.find_one({}, {'_id': 0})
+
+  i = 2
+  for holiday in holidays:
+    ws.cell(row=i, column=1).value = holiday
+    ws.cell(row=i, column=2).value = holidays[holiday]['date']
+    day = datetime.strptime(holidays[holiday]['date'], '%d/%m/%Y').date()
+    ws.cell(row=i, column=3).value = day.strftime('%A')
+    i += 1
 
 
 def write_production_price_sheet(matrix: NDArray[MatrixBullet], wb: Workbook):
@@ -306,6 +327,8 @@ def create_sheets(wb: Workbook) -> None:
   """
   ws = wb.active
   ws.title = 'taoz'
+
+  wb.create_sheet('holidays')
 
   wb.create_sheet('price')
   wb.create_sheet('total_production_amount')
