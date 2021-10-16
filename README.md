@@ -23,9 +23,28 @@ set FLASK_ENV=development
 set FLASK_APP=run.py
 ```
 
-## Usage
+## RUN
 Run the application with the following command
 
 ```bash
 flask run
 ```
+
+## Usage
+To start the algorithm a HTTP POST request needs to be sent to:
+
+```bash
+http://localhost:5000/start
+```
+
+The request contains a body in the next format:
+
+```json
+{ 
+    "year": 2021,
+    "target": 151700000
+}
+```
+
+• year field is the year to create a plan for.<br>
+• target field is the production amount to achieve in the plan.
