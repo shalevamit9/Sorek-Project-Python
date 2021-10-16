@@ -1,0 +1,25 @@
+[{
+  "_id": {
+    "$oid": "60992b5da017caa5323b4dc4"
+  },
+  "days": [
+    {
+      "date": "17/7/2021",
+      "from_hour": 10,
+      "to_hour": 11,
+      "is_south_facility": false
+    },
+    {
+      "date": "19/2/2021",
+      "from_hour": 16,
+      "to_hour": 17,
+      "is_south_facility": true
+    },
+    {
+      "date": "9/4/2021",
+      "from_hour": 11,
+      "to_hour": 12,
+      "is_south_facility": false
+    }
+  ]
+}]

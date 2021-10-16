@@ -1,0 +1,509 @@
+[{
+  "_id": {
+    "$oid": "60d0b23b0f6528eb4f48d3b9"
+  },
+  "jan": {
+    "2": {
+      "min": {
+        "prod_amount": 4600,
+        "se": 3.35
+      },
+      "max": {
+        "prod_amount": 5200,
+        "se": 3.33
+      }
+    },
+    "3": {
+      "min": {
+        "prod_amount": 6900,
+        "se": 3.45
+      },
+      "max": {
+        "prod_amount": 8000,
+        "se": 3.4
+      }
+    },
+    "4": {
+      "min": {
+        "prod_amount": 8900,
+        "se": 3.65
+      },
+      "max": {
+        "prod_amount": 10400,
+        "se": 3.7
+      }
+    },
+    "5": {
+      "min": {
+        "prod_amount": 10700,
+        "se": null
+      },
+      "max": {
+        "prod_amount": 12000,
+        "se": null
+      }
+    }
+  },
+  "feb": {
+    "2": {
+      "min": {
+        "prod_amount": 4600,
+        "se": 3.32
+      },
+      "max": {
+        "prod_amount": 5200,
+        "se": 3.28
+      }
+    },
+    "3": {
+      "min": {
+        "prod_amount": 6900,
+        "se": 3.45
+      },
+      "max": {
+        "prod_amount": 8000,
+        "se": 3.4
+      }
+    },
+    "4": {
+      "min": {
+        "prod_amount": 8900,
+        "se": 3.55
+      },
+      "max": {
+        "prod_amount": 10400,
+        "se": 3.65
+      }
+    },
+    "5": {
+      "min": {
+        "prod_amount": 10700,
+        "se": null
+      },
+      "max": {
+        "prod_amount": 12000,
+        "se": null
+      }
+    }
+  },
+  "mar": {
+    "2": {
+      "min": {
+        "prod_amount": 4600,
+        "se": 3.32
+      },
+      "max": {
+        "prod_amount": 5200,
+        "se": 3.26
+      }
+    },
+    "3": {
+      "min": {
+        "prod_amount": 6900,
+        "se": 3.45
+      },
+      "max": {
+        "prod_amount": 8000,
+        "se": 3.4
+      }
+    },
+    "4": {
+      "min": {
+        "prod_amount": 8900,
+        "se": 3.45
+      },
+      "max": {
+        "prod_amount": 10400,
+        "se": 3.5
+      }
+    },
+    "5": {
+      "min": {
+        "prod_amount": 10700,
+        "se": null
+      },
+      "max": {
+        "prod_amount": 12000,
+        "se": null
+      }
+    }
+  },
+  "apr": {
+    "2": {
+      "min": {
+        "prod_amount": 4600,
+        "se": 3.32
+      },
+      "max": {
+        "prod_amount": 5200,
+        "se": 3.28
+      }
+    },
+    "3": {
+      "min": {
+        "prod_amount": 6900,
+        "se": 3.45
+      },
+      "max": {
+        "prod_amount": 8000,
+        "se": 3.4
+      }
+    },
+    "4": {
+      "min": {
+        "prod_amount": 8900,
+        "se": 3.4
+      },
+      "max": {
+        "prod_amount": 10400,
+        "se": 3.45
+      }
+    },
+    "5": {
+      "min": {
+        "prod_amount": 10700,
+        "se": null
+      },
+      "max": {
+        "prod_amount": 12000,
+        "se": null
+      }
+    }
+  },
+  "may": {
+    "2": {
+      "min": {
+        "prod_amount": 4600,
+        "se": 3.32
+      },
+      "max": {
+        "prod_amount": 5200,
+        "se": 3.28
+      }
+    },
+    "3": {
+      "min": {
+        "prod_amount": 6900,
+        "se": 3.4
+      },
+      "max": {
+        "prod_amount": 8000,
+        "se": 3.37
+      }
+    },
+    "4": {
+      "min": {
+        "prod_amount": 8900,
+        "se": 3.45
+      },
+      "max": {
+        "prod_amount": 10400,
+        "se": 3.37
+      }
+    },
+    "5": {
+      "min": {
+        "prod_amount": 10700,
+        "se": 3.75
+      },
+      "max": {
+        "prod_amount": 12000,
+        "se": 3.8
+      }
+    }
+  },
+  "jun": {
+    "2": {
+      "min": {
+        "prod_amount": 4600,
+        "se": 3.32
+      },
+      "max": {
+        "prod_amount": 5200,
+        "se": 3.28
+      }
+    },
+    "3": {
+      "min": {
+        "prod_amount": 6900,
+        "se": 3.4
+      },
+      "max": {
+        "prod_amount": 8000,
+        "se": 3.37
+      }
+    },
+    "4": {
+      "min": {
+        "prod_amount": 8900,
+        "se": 3.45
+      },
+      "max": {
+        "prod_amount": 10400,
+        "se": 3.37
+      }
+    },
+    "5": {
+      "min": {
+        "prod_amount": 10700,
+        "se": 3.65
+      },
+      "max": {
+        "prod_amount": 12000,
+        "se": 3.75
+      }
+    }
+  },
+  "jul": {
+    "2": {
+      "min": {
+        "prod_amount": 4600,
+        "se": 3.32
+      },
+      "max": {
+        "prod_amount": 5200,
+        "se": 3.28
+      }
+    },
+    "3": {
+      "min": {
+        "prod_amount": 6900,
+        "se": 3.4
+      },
+      "max": {
+        "prod_amount": 8000,
+        "se": 3.37
+      }
+    },
+    "4": {
+      "min": {
+        "prod_amount": 8900,
+        "se": 3.45
+      },
+      "max": {
+        "prod_amount": 10400,
+        "se": 3.37
+      }
+    },
+    "5": {
+      "min": {
+        "prod_amount": 10700,
+        "se": 3.6
+      },
+      "max": {
+        "prod_amount": 12000,
+        "se": 3.7
+      }
+    }
+  },
+  "aug": {
+    "2": {
+      "min": {
+        "prod_amount": 4600,
+        "se": 3.32
+      },
+      "max": {
+        "prod_amount": 5200,
+        "se": 3.28
+      }
+    },
+    "3": {
+      "min": {
+        "prod_amount": 6900,
+        "se": 3.4
+      },
+      "max": {
+        "prod_amount": 8000,
+        "se": 3.37
+      }
+    },
+    "4": {
+      "min": {
+        "prod_amount": 8900,
+        "se": 3.45
+      },
+      "max": {
+        "prod_amount": 10400,
+        "se": 3.37
+      }
+    },
+    "5": {
+      "min": {
+        "prod_amount": 10700,
+        "se": 3.65
+      },
+      "max": {
+        "prod_amount": 12000,
+        "se": 3.75
+      }
+    }
+  },
+  "sep": {
+    "2": {
+      "min": {
+        "prod_amount": 4600,
+        "se": 3.32
+      },
+      "max": {
+        "prod_amount": 5200,
+        "se": 3.28
+      }
+    },
+    "3": {
+      "min": {
+        "prod_amount": 6900,
+        "se": 3.4
+      },
+      "max": {
+        "prod_amount": 8000,
+        "se": 3.37
+      }
+    },
+    "4": {
+      "min": {
+        "prod_amount": 8900,
+        "se": 3.45
+      },
+      "max": {
+        "prod_amount": 10400,
+        "se": 3.37
+      }
+    },
+    "5": {
+      "min": {
+        "prod_amount": 10700,
+        "se": 3.65
+      },
+      "max": {
+        "prod_amount": 12000,
+        "se": 3.75
+      }
+    }
+  },
+  "oct": {
+    "2": {
+      "min": {
+        "prod_amount": 4600,
+        "se": 3.32
+      },
+      "max": {
+        "prod_amount": 5200,
+        "se": 3.28
+      }
+    },
+    "3": {
+      "min": {
+        "prod_amount": 6900,
+        "se": 3.42
+      },
+      "max": {
+        "prod_amount": 8000,
+        "se": 3.39
+      }
+    },
+    "4": {
+      "min": {
+        "prod_amount": 8900,
+        "se": 3.45
+      },
+      "max": {
+        "prod_amount": 10400,
+        "se": 3.37
+      }
+    },
+    "5": {
+      "min": {
+        "prod_amount": 10700,
+        "se": 3.75
+      },
+      "max": {
+        "prod_amount": 12000,
+        "se": 3.8
+      }
+    }
+  },
+  "nov": {
+    "2": {
+      "min": {
+        "prod_amount": 4600,
+        "se": 3.32
+      },
+      "max": {
+        "prod_amount": 5200,
+        "se": 3.28
+      }
+    },
+    "3": {
+      "min": {
+        "prod_amount": 6900,
+        "se": 3.45
+      },
+      "max": {
+        "prod_amount": 8000,
+        "se": 3.4
+      }
+    },
+    "4": {
+      "min": {
+        "prod_amount": 8900,
+        "se": 3.45
+      },
+      "max": {
+        "prod_amount": 10400,
+        "se": 3.37
+      }
+    },
+    "5": {
+      "min": {
+        "prod_amount": 10700,
+        "se": null
+      },
+      "max": {
+        "prod_amount": 12000,
+        "se": null
+      }
+    }
+  },
+  "dec": {
+    "2": {
+      "min": {
+        "prod_amount": 4600,
+        "se": 3.35
+      },
+      "max": {
+        "prod_amount": 5200,
+        "se": 3.3
+      }
+    },
+    "3": {
+      "min": {
+        "prod_amount": 6900,
+        "se": 3.45
+      },
+      "max": {
+        "prod_amount": 8000,
+        "se": 3.4
+      }
+    },
+    "4": {
+      "min": {
+        "prod_amount": 8900,
+        "se": 3.45
+      },
+      "max": {
+        "prod_amount": 10400,
+        "se": 3.37
+      }
+    },
+    "5": {
+      "min": {
+        "prod_amount": 10700,
+        "se": null
+      },
+      "max": {
+        "prod_amount": 12000,
+        "se": null
+      }
+    }
+  }
+}]

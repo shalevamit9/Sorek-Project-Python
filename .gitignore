@@ -4,5 +4,4 @@ sorek_env
 */__pycache__
 .env
 .vscode
-Sorek-Plan.xlsx
-Sorek-Plan-Optimized.xlsx
+Sorek-Plan*

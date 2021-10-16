@@ -1,0 +1,89 @@
+[{
+  "_id": {
+    "$oid": "60993fe5a017caa5323b4dc5"
+  },
+  "jan_feb": {
+    "biomonthly": {
+      "min": 19500000,
+      "max": 21000000
+    },
+    "daily": {
+      "min": 0,
+      "max": 392000
+    },
+    "hourly": {
+      "min": 0,
+      "max": 21300
+    }
+  },
+  "mar_apr": {
+    "biomonthly": {
+      "min": 23000000,
+      "max": 24000000
+    },
+    "daily": {
+      "min": 375000,
+      "max": 398000
+    },
+    "hourly": {
+      "min": 0,
+      "max": 21600
+    }
+  },
+  "may_jun": {
+    "biomonthly": {
+      "min": 26100000,
+      "max": 28800000
+    },
+    "daily": {
+      "min": 420000,
+      "max": 480000
+    },
+    "hourly": {
+      "min": 0,
+      "max": 26000
+    }
+  },
+  "jul_aug": {
+    "biomonthly": {
+      "min": 28500000,
+      "max": 29300000
+    },
+    "daily": {
+      "min": 455000,
+      "max": 480000
+    },
+    "hourly": {
+      "min": 0,
+      "max": 26000
+    }
+  },
+  "sep_oct": {
+    "biomonthly": {
+      "min": 27000000,
+      "max": 28800000
+    },
+    "daily": {
+      "min": 443000,
+      "max": 480000
+    },
+    "hourly": {
+      "min": 0,
+      "max": 26000
+    }
+  },
+  "nov_dec": {
+    "biomonthly": {
+      "min": 21400000,
+      "max": 22600000
+    },
+    "daily": {
+      "min": 0,
+      "max": 408000
+    },
+    "hourly": {
+      "min": 0,
+      "max": 22100
+    }
+  }
+}]

@@ -1,0 +1,227 @@
+[{
+  "_id": {
+    "$oid": "608171120d9ff99c29b560f7"
+  },
+  "taoz_cost": [
+    {
+      "season": "winter",
+      "SHEFEL": 19.97,
+      "GEVA": 22.44,
+      "PISGA": 22.44
+    },
+    {
+      "season": "winter",
+      "SHEFEL": 19.97,
+      "GEVA": 22.44,
+      "PISGA": 22.44
+    },
+    {
+      "season": "spring_autumn",
+      "SHEFEL": 19.97,
+      "GEVA": 22.44,
+      "PISGA": 22.44
+    },
+    {
+      "season": "spring_autumn",
+      "SHEFEL": 19.97,
+      "GEVA": 22.44,
+      "PISGA": 22.44
+    },
+    {
+      "season": "spring_autumn",
+      "SHEFEL": 19.97,
+      "GEVA": 22.44,
+      "PISGA": 22.44
+    },
+    {
+      "season": "spring_autumn",
+      "SHEFEL": 19.97,
+      "GEVA": 22.44,
+      "PISGA": 22.44
+    },
+    {
+      "season": "summer",
+      "SHEFEL": 19.97,
+      "GEVA": 22.44,
+      "PISGA": 22.44
+    },
+    {
+      "season": "summer",
+      "SHEFEL": 19.97,
+      "GEVA": 22.44,
+      "PISGA": 22.44
+    },
+    {
+      "season": "spring_autumn",
+      "SHEFEL": 19.97,
+      "GEVA": 22.44,
+      "PISGA": 22.44
+    },
+    {
+      "season": "spring_autumn",
+      "SHEFEL": 19.97,
+      "GEVA": 22.44,
+      "PISGA": 22.44
+    },
+    {
+      "season": "spring_autumn",
+      "SHEFEL": 19.97,
+      "GEVA": 22.44,
+      "PISGA": 22.44
+    },
+    {
+      "season": "winter",
+      "SHEFEL": 19.97,
+      "GEVA": 22.44,
+      "PISGA": 22.44
+    }
+  ],
+  "secondary_taoz_cost": [
+    {
+      "season": "winter",
+      "SHEFEL": 25.07,
+      "GEVA": 45.3,
+      "PISGA": 77.56
+    },
+    {
+      "season": "winter",
+      "SHEFEL": 25.07,
+      "GEVA": 45.3,
+      "PISGA": 77.56
+    },
+    {
+      "season": "spring_autumn",
+      "SHEFEL": 21.89,
+      "GEVA": 27.41,
+      "PISGA": 34.47
+    },
+    {
+      "season": "spring_autumn",
+      "SHEFEL": 21.89,
+      "GEVA": 27.41,
+      "PISGA": 34.47
+    },
+    {
+      "season": "spring_autumn",
+      "SHEFEL": 21.89,
+      "GEVA": 27.41,
+      "PISGA": 34.47
+    },
+    {
+      "season": "spring_autumn",
+      "SHEFEL": 21.89,
+      "GEVA": 27.41,
+      "PISGA": 34.47
+    },
+    {
+      "season": "summer",
+      "SHEFEL": 22.17,
+      "GEVA": 34.35,
+      "PISGA": 83.78
+    },
+    {
+      "season": "summer",
+      "SHEFEL": 22.17,
+      "GEVA": 34.35,
+      "PISGA": 83.78
+    },
+    {
+      "season": "spring_autumn",
+      "SHEFEL": 21.89,
+      "GEVA": 27.41,
+      "PISGA": 34.47
+    },
+    {
+      "season": "spring_autumn",
+      "SHEFEL": 21.89,
+      "GEVA": 27.41,
+      "PISGA": 34.47
+    },
+    {
+      "season": "spring_autumn",
+      "SHEFEL": 21.89,
+      "GEVA": 27.41,
+      "PISGA": 34.47
+    },
+    {
+      "season": "winter",
+      "SHEFEL": 25.07,
+      "GEVA": 45.3,
+      "PISGA": 77.56
+    }
+  ],
+  "energy_limit": [
+    {
+      "season": "winter",
+      "SHEFEL": 64000,
+      "GEVA": 44200,
+      "PISGA": 44200
+    },
+    {
+      "season": "winter",
+      "SHEFEL": 63900,
+      "GEVA": 43700,
+      "PISGA": 43700
+    },
+    {
+      "season": "spring_autumn",
+      "SHEFEL": 75100,
+      "GEVA": 50500,
+      "PISGA": 50500
+    },
+    {
+      "season": "spring_autumn",
+      "SHEFEL": 75200,
+      "GEVA": 50700,
+      "PISGA": 50700
+    },
+    {
+      "season": "spring_autumn",
+      "SHEFEL": 93500,
+      "GEVA": 60800,
+      "PISGA": 60800
+    },
+    {
+      "season": "spring_autumn",
+      "SHEFEL": 98700,
+      "GEVA": 62500,
+      "PISGA": 62500
+    },
+    {
+      "season": "summer",
+      "SHEFEL": 99600,
+      "GEVA": 57600,
+      "PISGA": 57600
+    },
+    {
+      "season": "summer",
+      "SHEFEL": 99300,
+      "GEVA": 59600,
+      "PISGA": 59600
+    },
+    {
+      "season": "spring_autumn",
+      "SHEFEL": 99700,
+      "GEVA": 64000,
+      "PISGA": 64000
+    },
+    {
+      "season": "spring_autumn",
+      "SHEFEL": 98700,
+      "GEVA": 62200,
+      "PISGA": 62200
+    },
+    {
+      "season": "spring_autumn",
+      "SHEFEL": 78300,
+      "GEVA": 51700,
+      "PISGA": 51700
+    },
+    {
+      "season": "winter",
+      "SHEFEL": 67900,
+      "GEVA": 46600,
+      "PISGA": 46600
+    }
+  ]
+}]

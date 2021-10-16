@@ -18,7 +18,7 @@ class Facility:
     def calculate_price(self) -> None:
         """Calculates the production_price for the using facility."""
         if self.shutdown is False:
-            self.production_price = self.se_per_hour * self.production_amount * self.taoz_cost
+            self.production_price = self.se_per_hour * self.production_amount * self.taoz_cost / 100
 
 
 class MatrixBullet:

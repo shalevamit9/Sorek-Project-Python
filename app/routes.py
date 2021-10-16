@@ -220,6 +220,8 @@ def update_hour(hour: MatrixBullet, is_north: bool, hourly_limit: int) -> None:
 
     month = hour.date.month - 1
 
+    production_amount_before_update = hour.get_production_amount()
+
     is_north_updateable = is_north and hour.north_facility.number_of_pumps < 5
     if is_north_updateable:
         facility: Facility = hour.north_facility
@@ -239,6 +241,10 @@ def update_hour(hour: MatrixBullet, is_north: bool, hourly_limit: int) -> None:
             facility.production_amount = hourly_limit
 
     hour.calculate_price()
+
+    production_amount_after_update = hour.get_production_amount()
+
+    return production_amount_after_update - production_amount_before_update
 
 
 def get_cheapest_hour_of_day(day: NDArray[MatrixBullet], hourly_limit: int) -> Tuple[MatrixBullet, bool]:
@@ -442,6 +448,27 @@ def update_bio_month_production(matrix: NDArray[MatrixBullet], production_limits
         nov_dec_prod_amount = get_bio_month_production_amount(matrix, nov_dec_start_day, nov_dec_end_day)
 
 
+def get_cheapest_hour_with_limits(matrix: NDArray[MatrixBullet], production_limits) -> MatrixBullet:
+    rows = matrix.shape[0]
+    cols = matrix.shape[1]
+
+    cheapest_hour: MatrixBullet = matrix[0, 0]
+
+    for i in range(rows):
+        current_bio_month = matrix[i, 0].get_bio_month()
+        for j in range(cols):
+            bullet: MatrixBullet = matrix[i, j]
+
+            if bullet.price < cheapest_hour.price and (not bullet.south_facility.shutdown or not bullet.south_facility.shutdown) \
+                and (bullet.get_production_amount() < production_limits[current_bio_month]['hourly']['max'])  \
+                and (bullet.south_facility.number_of_pumps < 5 or bullet.north_facility.number_of_pumps < 5) \
+                and (min_max_hp['north'][bullet.north_facility.number_of_pumps - 1]['max'] <= production_limits[current_bio_month]['hourly']['max']
+                or min_max_hp['south'][bullet.south_facility.number_of_pumps - 1]['max'] <= production_limits[current_bio_month]['hourly']['max']):
+                cheapest_hour = bullet
+    
+    return cheapest_hour
+
+
 def get_cheapest_hour(matrix: NDArray[MatrixBullet]) -> MatrixBullet:
     rows = matrix.shape[0]
     cols = matrix.shape[1]
@@ -482,7 +509,7 @@ def update_cheapest_hours(matrix: NDArray[MatrixBullet], production_limits) -> N
     }
 
     while current_production_amount < target_amount:
-        bullet = get_cheapest_hour(matrix)
+        bullet = get_cheapest_hour_with_limits(matrix, production_limits)
 
         production_amount_to_add = calculate_production_amount_to_add(bullet)
         is_over_target = current_production_amount + calculate_production_amount_to_add(bullet) > target_amount
@@ -491,19 +518,27 @@ def update_cheapest_hours(matrix: NDArray[MatrixBullet], production_limits) -> N
 
             if not bullet.north_facility.shutdown and bullet.north_facility.number_of_pumps < 5:
                 bullet.north_facility.production_amount += production_amount_to_add
+                # current_production_amount += production_amount_to_add
             elif not bullet.south_facility.shutdown and bullet.south_facility.number_of_pumps < 5:
                 bullet.south_facility.production_amount += production_amount_to_add
+                # current_production_amount += production_amount_to_add
         else:
             if not bullet.north_facility.shutdown and bullet.north_facility.number_of_pumps < 5\
                 and is_bio_month_updateable(matrix, bio_months[bullet.get_bio_month()], bullet, True\
                     , production_limits[bullet.get_bio_month()]['hourly']['max'], production_limits[bullet.get_bio_month()]['biomonthly']['max']):
-                update_hour(bullet, True, production_limits[bullet.get_bio_month()]['hourly']['max'])
+                production_amount_to_add = update_hour(bullet, True, production_limits[bullet.get_bio_month()]['hourly']['max'])
+                # current_production_amount += production_amount_to_add
             elif not bullet.south_facility.shutdown and bullet.south_facility.number_of_pumps < 5\
                 and is_bio_month_updateable(matrix, bio_months[bullet.get_bio_month()], bullet, False\
                     , production_limits[bullet.get_bio_month()]['hourly']['max'], production_limits[bullet.get_bio_month()]['biomonthly']['max']):
-                update_hour(bullet, False, production_limits[bullet.get_bio_month()]['hourly']['max'])
+                production_amount_to_add = update_hour(bullet, False, production_limits[bullet.get_bio_month()]['hourly']['max'])
+                # current_production_amount += production_amount_to_add
 
         current_production_amount += production_amount_to_add
+
+    x = sum(sum(matrix))
+    z = current_production_amount
+    y = 5
 
 
 def update_expensive_hours(matrix: NDArray[MatrixBullet], production_limits) -> None:
@@ -639,6 +674,7 @@ def start_algorithm():
     matrix = np.empty([ROWS, COLS], dtype=MatrixBullet)
     fill_matrix(matrix)
     update_production_price_till_target(matrix)
+    prod_amount = get_bio_month_production_amount(matrix, 0, len(matrix) - 1)
     optimize_production_percentage(matrix)
     write_plan_to_xl(matrix)
     return jsonify({'status': 'success'})
