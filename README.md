@@ -31,7 +31,7 @@ flask run
 ```
 
 ## Usage
-To start the algorithm a HTTP POST request needs to be sent to:
+To start the algorithm send a HTTP POST request:
 
 ```bash
 http://localhost:5000/start
