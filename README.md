@@ -1,4 +1,4 @@
-# Dialogue-Backend-Task
+# Sorek-Python-Project
 
 ## Common setup
 
